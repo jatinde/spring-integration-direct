@@ -8,9 +8,17 @@
 		http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration-5.1.xsd">
 
 	<int:gateway service-interface="com.jay.integration.springintegrations.MiddlewareGateway" 
-		default-request-channel="inputChannel"
+		default-request-channel="pollableChannel"
 	/>
 
+	<int:channel id="pollableChannel">
+		<int:queue capacity="10" />
+	</int:channel>
+	
+	<int:bridge input-channel="pollableChannel" output-channel="inputChannel">
+		<int:poller fixed-delay="5" time-unit="SECONDS" max-messages-per-poll="2"></int:poller>
+	</int:bridge>
+	
 	<task:executor id="executor" pool-size="5" />
 	<int:publish-subscribe-channel id="inputChannel" task-executor="executor"/>
 	
