@@ -13,11 +13,16 @@
 
 	<int:channel id="pollableChannel">
 		<int:queue capacity="10" />
+		<int:interceptors>
+			<int:ref bean="interceptor"/>
+		</int:interceptors>
 	</int:channel>
 	
 	<int:bridge input-channel="pollableChannel" output-channel="inputChannel">
 		<int:poller fixed-delay="5" time-unit="SECONDS" max-messages-per-poll="2"></int:poller>
 	</int:bridge>
+	
+	<bean id="interceptor" class="com.jay.integration.springintegrations.CustomChannelIterceptor" />
 	
 	<task:executor id="executor" pool-size="5" />
 	<int:publish-subscribe-channel id="inputChannel" task-executor="executor"/>
